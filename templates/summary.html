@@ -1,0 +1,102 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistics</title>
+    <link rel="stylesheet" href="{% static "jquery-ui-themes-1.12.1/themes/base/jquery-ui.css" %}">
+    <script type="text/javascript" src="{% static "jquery-3.4.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "jquery-ui-1.12.1/jquery-ui.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/changelists.css">
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+    <script type="text/javascript" src="/static/admin/js/actions.js"></script>
+    <script type="text/javascript" src="/static/admin/js/urlify.js"></script>
+    <script type="text/javascript" src="/static/admin/js/prepopulate.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/xregexp/xregexp.js"></script>
+    <script>
+    $( function() {
+        $( "#datepicker" ).datepicker({
+            dateFormat: "yy-mm-dd",
+            altField: "#actualDate"
+        });
+    } );
+    $( function() {
+        $("#by").selectmenu({
+            change: function( event, ui ) {
+                window.location.href = window.location.pathname + "?start_date=" + document.getElementById("datepicker").value  + '&by=' + document.getElementById("by").value;
+            }
+        });
+    } );
+    </script>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css">
+    <meta name="robots" content="NONE,NOARCHIVE">
+</head>
+<body>
+
+<h1 align="center">{{ page_title }}</h1>
+
+<p>
+    Date: <input type="text" id="datepicker" value="{{ start_date }}">
+</p>
+
+<label for="by">Aggregate by</label>
+
+<form>
+    <select class="target" id="by">
+      <option{% if by_val == 'rosette' %} selected="selected"{% endif %}>rosette</option>
+      <option{% if by_val == 'bed' %} selected="selected"{% endif %}>bed</option>
+      <option{% if by_val == 'file' %} selected="selected"{% endif %}>file</option>
+    </select>
+</form>
+
+
+<script>
+    $( "#datepicker" ).change(function() {
+        window.location.href = window.location.pathname + "?start_date=" + document.getElementById("datepicker").value  + '&by=' + document.getElementById("by").value;
+    });
+</script>
+
+<div class="results">
+<table id="result_list">
+<thead>
+<tr>
+
+    {% for col in col_title %}
+    <th scope="col"  class="column-bed_name">
+    <div class="text"><span>{{ col | safe }}</span></div>
+    <div class="clear"></div>
+    </th>
+    {% endfor %}
+
+</tr>
+</thead>
+<tbody>
+
+{% for row in result_table %}
+
+    {% if forloop.counter|divisibleby:"2" %}
+    <tr class="row2">
+    {% else %}
+    <tr class="row1">
+    {% endif %}
+
+    {% for col in row %}
+        <td class="field-bed_name">{{ col | safe }}</td>
+    {% endfor %}
+
+    </tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+
+</body>
+</html>

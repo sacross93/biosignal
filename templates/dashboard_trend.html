@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AMC Bio Signal</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+  <!-- Bootstrap 3.3.7 -->
+  <link rel="stylesheet" href="static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="static/bower_components/font-awesome/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="static/bower_components/Ionicons/css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="static/dist/css/AdminLTE.min.css">
+  <!-- Morris charts -->
+  <link rel="stylesheet" href="static/bower_components/morris.js/morris.css">
+
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="static/dist/css/skins/_all-skins.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="static/bower_components/jvectormap/jquery-jvectormap.css">
+  <!-- Date Picker -->
+  <link rel="stylesheet" href="static/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="static/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+  <!-- bootstrap wysihtml5 - text editor -->
+  <link rel="stylesheet" href="static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- Google Font -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="dashboard" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>A</b>N</span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>A</b>nesthesiology</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+    </nav>
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu" data-widget="tree">
+        {% for key, val in sidebar_menu.items %}
+          {% if val.active %}
+            <li class="treeview active">
+              {% else %}
+            <li class="treeview">
+          {% endif %}
+          <li class="treeview">
+            <a href="#">
+              <i class="fa fa-dashboard"></i> <span>{{ key }}</span>
+              <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              {% for menu in val.submenu %}
+                {% if menu.0 %}
+                  <li class="active"><a href="{{ menu.2 }}"><i class="fa fa-circle-o"></i>{{ menu.1 }}</a></li>
+                {% else %}
+                  <li><a href="{{ menu.2 }}"><i class="fa fa-circle-o"></i>{{ menu.1 }}</a></li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Dashboard Trend
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Dashboard</a></li>
+        <li class="active">Dashboard Trend</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header">
+              <i class="fa fa-map-marker"></i>
+              <h3 class="box-title">
+                Visitors
+              </h3>
+            </div>
+            <div class ="box-body">
+{#        table#}
+        <table class="table">
+          <thead>
+            <tr>
+
+              <th scope="col">총 파일 수</th>
+                <th scope="col">총 환자 수</th>
+              <th scope="col">총 저장 시간</th>
+              <th scope="col">Vital 파일 수</th>
+                <th scope="col">Windaq 파일 수</th>
+                <th scope="col">총 용량</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">
+                  {{data.total_files}}
+              </th>
+              <td>{{ data.total_patients }}</td>
+              <td>{{ data.total_hours }}</td>
+              <td>{{ data.vital_files }}</td>
+                <td>{{ data.windaq_files }}</td>
+                <td>{{ data.storage_usage.print_total }} GB</td>
+            </tr>
+          </tbody>
+        </table>
+                <br>
+              <div class="row">
+                <div class="col-lg-6">
+                  <!-- LINE CHART -->
+                  <div class="box box-default">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">최근 저장 파일</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                        <div class="col-md-10">
+                          <div class="chart">
+                            <canvas id="FileChart" style="height:250px"></canvas>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <ul class="chart-legend clearfix">
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Olive"></i>
+                              B
+                            </li>
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Gold"></i>
+                              C
+                            </li>
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Black"></i>
+                              D
+                            </li>
+
+                            <li>
+                              <i class="fa fa-circle-o" style="color:CadetBlue"></i>
+                              E
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:Coral"></i>
+                              F
+                            </li>
+
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkCyan"></i>
+                              G
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkGray"></i>
+                              H
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkMagenta"></i>
+                              I
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              J
+                            </li>
+                              <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              K
+                            </li>
+                              <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              OB
+                            </li>
+
+
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.box-body -->
+                  </div>
+                  <!-- /.box -->
+                </div>
+                <div class="col-lg-6">
+                  <!-- LINE CHART -->
+                  <div class="box box-default">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">최근 저장 시간</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="row">
+                        <div class="col-md-10">
+                          <div class="chart">
+                            <canvas id="HourChart" style="height:250px"></canvas>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <ul class="chart-legend clearfix">
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Olive"></i>
+                              B
+                            </li>
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Gold"></i>
+                              C
+                            </li>
+                            <li>
+                              <i class="fa fa-circle-o" style="color:Black"></i>
+                              D
+                            </li>
+
+                            <li>
+                              <i class="fa fa-circle-o" style="color:CadetBlue"></i>
+                              E
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:Coral"></i>
+                              F
+                            </li>
+
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkCyan"></i>
+                              G
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkGray"></i>
+                              H
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkMagenta"></i>
+                              I
+                            </li>
+                                                          <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              J
+                            </li>
+                              <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              K
+                            </li>
+                              <li>
+                              <i class="fa fa-circle-o" style="color:DarkOrchid"></i>
+                              OB
+                            </li>
+
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.box-body -->
+                  </div>
+                  <!-- /.box -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.row-->
+      <!-- row down-->
+      <div class="row">
+        <div class="col-lg-4">
+          <!-- AREA CHART -->
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">연도별 환자 수 </h3>
+            </div>
+            <div class="box-body">
+                <div id="patients_bar"></div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col-->
+        <div class="col-lg-4">
+          <!-- AREA CHART -->
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">장비 수집 환자</h3>
+            </div>
+            <div class="box-body">
+                <div id="bar-chart"></div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col-->
+
+        <div class="col-lg-4">
+          <!-- DONUT CHART -->
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">하드 사용량 (GB)</h3>
+            </div>
+{#            <div class="box-body">#}
+{#              <div class="chart">#}
+{#                <canvas id="StorageChart" style="height:250px"></canvas>#}
+{#              </div>#}
+{#            </div>#}
+
+{#               <label class="label label-success">Pie Chart</label>#}
+              <div id="pie-chart" ></div>
+
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+      <!-- /.row-->
+
+    </section>
+    <!-- /.content -->
+  </div>
+
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="pull-right hidden-xs">
+      <b>Version</b> 1.0.0
+    </div>
+    <strong>Copyright &copy; 2019 </strong>
+  </footer>
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+      <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+      <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+    </ul>
+  </aside>
+  <!-- /.control-sidebar -->
+  <!-- Add the sidebar's background. This div must be placed
+       immediately after the control sidebar -->
+  <div class="control-sidebar-bg"></div>
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+<script src="static/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- ChartJS -->
+<script src="static/bower_components/chart.js/Chart.js"></script>
+<!-- FastClick -->
+<script src="static/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="static/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="static/dist/js/demo.js"></script>
+<!-- page script -->
+
+<!-- daterangepicker -->
+<script src="static/bower_components/moment/min/moment.min.js"></script>
+<script src="static/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!-- datepicker -->
+<script src="static/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<!-- Morris.js charts -->
+<script src="static/bower_components/raphael/raphael.min.js"></script>
+<script src="static/bower_components/morris.js/morris.min.js"></script>
+
+<script>
+    $(function () {
+        //Date range as a button
+        $('#daterange-btn').daterangepicker(
+            {
+                ranges   : {
+                    'Today'       : [moment(), moment()],
+                    'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate  : moment()
+            },
+            function (start, end) {
+                $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            }
+        );
+
+        /* ChartJS
+         * -------
+         * Here we will create a few charts using ChartJS
+         */
+
+        {#const colors = [#}
+        {#    'rgb(0,192,239',#}
+        {#    'rgb(241,92,92',#}
+        {#    'rgb(246,179,82',#}
+        {#    'rgb(79,134,198',#}
+        {#    'rgb(0,166,90',#}
+        {#    'rgb(221,223,230',#}
+        {#    'rgb(165,147,224',#}
+        {#    'rgb(247,170,151',#}
+        {#    'rgb(208,232,107',#}
+        {#    'rgb(136,22,0',#}
+        {#    'rgb(59,78,50',#}
+        {#    'rgb(63,64,64'#}
+        {#];#}
+
+        const colors = [
+            'rgb(128, 128, 0',//Olive
+            'rgb(255, 215, 0',//Gold
+            'rgb(0,0,0',//Black
+            'rgb(135, 206, 235',//SkyBlue
+            'rgb(95, 158, 160',//CadetBlue
+            'rgb(255, 127, 80',//Coral
+            'rgb(220, 20, 60',//Crimson
+            'rgb(0, 139, 139',//DarkCyan
+            'rgb(169, 169, 169',//DarkGray
+            'rgb(139, 0, 139',//DarkMagenta
+            'rgb(153, 50, 204',//DarkOrchid
+            'rgb(143, 188, 143'//DarkSeaGreen
+        ];
+
+        data = {{ data_json|safe }};
+
+        //-------------
+        //- LINE CHART DATA-
+        //--------------
+        // Get context with jQuery - using jQuery's .get() method.
+        let FileChartCanvas          = $('#FileChart').get(0).getContext('2d');
+        // This will get the first returned node in the jQuery collection.
+        let FileChart                = new Chart(FileChartCanvas);
+
+        datasets_FileChartData = [];
+        datasets_HourChartData = [];
+
+        let i = 0;
+
+        Object.entries(data.collected_files).forEach(entry => {
+            let key = entry[0];
+            let value = entry[1];
+            datasets_FileChartData.push({
+                label                   : key,
+                fillColor               : colors[i] + ',0.9)',
+                strokeColor             : colors[i] + ',0.8)',
+                pointColor              : colors[i] + ')',
+                pointStrokeColor        : colors[i] + ',1)',
+                pointHighlightFill      : colors[i] + ')',
+                pointHighlightStroke    : colors[i] + ',1)',
+                data                    : value
+            });
+            i++;
+            //use key and value here
+        });
+
+        i = 0;
+        Object.entries(data.collected_hours).forEach(entry => {
+            let key = entry[0];
+            let value = entry[1];
+            datasets_HourChartData.push({
+                label                   : key,
+                fillColor               : colors[i] + ',0.9)',
+                strokeColor             : colors[i] + ',0.8)',
+                pointColor              : colors[i] + ')',
+                pointStrokeColor        : colors[i] + ',1)',
+                pointHighlightFill      : colors[i] + ')',
+                pointHighlightStroke    : colors[i] + ',1)',
+                data                    : value
+            });
+            i++
+        });
+
+        let FileChartData = {
+            labels      : data.label_dates,
+            datasets    : datasets_FileChartData
+        };
+        let FileChartOptions = {
+            //Boolean - If we should show the scale at all
+            showScale               : true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines      : false,
+            //String - Colour of the grid lines
+            scaleGridLineColor      : 'rgba(0,0,0,.05)',
+            //Number - Width of the grid lines
+            scaleGridLineWidth      : 1,
+            //Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+            //Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines  : true,
+            //Boolean - Whether the line is curved between points
+            bezierCurve             : true,
+            //Number - Tension of the bezier curve between points
+            bezierCurveTension      : 0.3,
+            //Boolean - Whether to show a dot for each point
+            pointDot                : false,
+            //Number - Radius of each point dot in pixels
+            pointDotRadius          : 4,
+            //Number - Pixel width of point dot stroke
+            pointDotStrokeWidth     : 1,
+            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius : 20,
+            //Boolean - Whether to show a stroke for datasets
+            datasetStroke           : true,
+            //Number - Pixel width of dataset stroke
+            datasetStrokeWidth      : 2,
+            //Boolean - Whether to fill the dataset with a color
+            datasetFill             : false,
+            //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+            maintainAspectRatio     : true,
+            //Boolean - whether to make the chart responsive to window resizing
+            responsive              : true,
+            legend                  : {
+                display: true
+            }
+        };
+        FileChart.Bar(FileChartData, FileChartOptions);
+
+
+        //-------------
+        //- LINE CHART_1 DATA-
+        //--------------
+        // Get context with jQuery - using jQuery's .get() method.
+        let lineChartCanvas          = $('#HourChart').get(0).getContext('2d');
+        // This will get the first returned node in the jQuery collection.
+        let HourChart                = new Chart(lineChartCanvas);
+
+        let HourChartData = {
+            labels      : data.label_dates,
+            datasets    : datasets_HourChartData
+        };
+        let HourChartOptions = {
+            //Boolean - If we should show the scale at all
+            showScale               : true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines      : false,
+            //String - Colour of the grid lines
+            scaleGridLineColor      : 'rgba(0,0,0,.05)',
+            //Number - Width of the grid lines
+            scaleGridLineWidth      : 1,
+            //Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+            //Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines  : true,
+            //Boolean - Whether the line is curved between points
+            bezierCurve             : true,
+            //Number - Tension of the bezier curve between points
+            bezierCurveTension      : 0.3,
+            //Boolean - Whether to show a dot for each point
+            pointDot                : false,
+            //Number - Radius of each point dot in pixels
+            pointDotRadius          : 4,
+            //Number - Pixel width of point dot stroke
+            pointDotStrokeWidth     : 1,
+            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius : 20,
+            //Boolean - Whether to show a stroke for datasets
+            datasetStroke           : true,
+            //Number - Pixel width of dataset stroke
+            datasetStrokeWidth      : 2,
+            //Boolean - Whether to fill the dataset with a color
+            datasetFill             : false,
+            //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+            maintainAspectRatio     : true,
+            //Boolean - whether to make the chart responsive to window resizing
+            responsive              : true
+        };
+        HourChart.Bar(HourChartData, HourChartOptions);
+
+        //-------------
+        //- AREA CHART DATA-
+        //-------------
+{#        // Get context with jQuery - using jQuery's .get() method.#}
+{#        let AccFileChartCanvas = $('#AccFileChart').get(0).getContext('2d');#}
+{#        // This will get the first returned node in the jQuery collection.#}
+{#        let AccFileChart       = new Chart(AccFileChartCanvas);#}
+
+{##}
+{#        var date_label = []#}
+{##}
+{#        var label_date = data.accumulative.label_dates#}
+{#        for(var labels in data.accumulative.label_dates){#}
+            {#date_label.push(new Date(Date.parse(labels)))#}
+{#            date_label.push('01/' + label_date[0].split('-')[1] +'/' + label_date[0].split('-')[0])#}
+            {#date_label.push(data.accumulative.label_dates[labels].replace('-','/'))#}
+{#        }#}
+
+
+{##}
+{#        let AccFileChartData = {#}
+{#            labels  : data.accumulative.label_dates,#}
+            {#labels  : date_label,#}
+{##}
+{#            datasets: [#}
+{#                {#}
+{#                    label               : 'Files',#}
+{#                    fillColor           : 'rgba(0,192,239,0.9)',#}
+{#                    strokeColor         : 'rgba(0,192,239,0.8)',#}
+{#                    pointColor          : '#00c0ef',#}
+{#                    pointStrokeColor    : 'rgba(0,192,239,1)',#}
+{#                    pointHighlightFill  : '#00c0ef',#}
+{#                    pointHighlightStroke: 'rgba(0,192,239,1)',#}
+{#                    data                : data.accumulative.collected_files,#}
+{##}
+{##}
+{#                }#}
+{##}
+{#            ]#}
+{##}
+{#        };#}
+{#        var dateformat = 'DD/MM/YYYY'#}
+{#        let AccFileChartOptions = {#}
+{##}
+{#            //Boolean - If we should show the scale at all#}
+{#            showScale               : true,#}
+{#            //Boolean - Whether grid lines are shown across the chart#}
+{#            scaleShowGridLines      : false,#}
+{#            //String - Colour of the grid lines#}
+{#            scaleGridLineColor      : 'rgba(0,0,0,.05)',#}
+{#            //Number - Width of the grid lines#}
+{#            scaleGridLineWidth      : 1,#}
+{#            //Boolean - Whether to show horizontal lines (except X axis)#}
+{#            scaleShowHorizontalLines: true,#}
+{#            //Boolean - Whether to show vertical lines (except Y axis)#}
+{#            scaleShowVerticalLines  : true,#}
+{#            //Boolean - Whether the line is curved between points#}
+{#            bezierCurve             : true,#}
+{#            //Number - Tension of the bezier curve between points#}
+{#            bezierCurveTension      : 0.3,#}
+{#            //Boolean - Whether to show a dot for each point#}
+{#            pointDot                : false,#}
+{#            //Number - Radius of each point dot in pixels#}
+{#            pointDotRadius          : 4,#}
+{#            //Number - Pixel width of point dot stroke#}
+{#            pointDotStrokeWidth     : 1,#}
+{#            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point#}
+{#            pointHitDetectionRadius : 1,#}
+{#            //Boolean - Whether to show a stroke for datasets#}
+{#            datasetStroke           : true,#}
+{#            //Number - Pixel width of dataset stroke#}
+{#            datasetStrokeWidth      : 2,#}
+{#            //Boolean - Whether to fill the dataset with a color#}
+{#            datasetFill             : true,#}
+{#            //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container#}
+{#            maintainAspectRatio     : true,#}
+{#            //Boolean - whether to make the chart responsive to window resizing#}
+{#            responsive              : true,#}
+{#            scales:     {#}
+{#                xAxes: [{#}
+{#                    type:       "time",#}
+{#                    time:       {#}
+{#                        format: dateformat,#}
+{#                        tooltipFormat: 'll'#}
+{#                    }}]}#}
+{##}
+{##}
+{##}
+{#        };#}
+{##}
+{#        //Create the Area chart#}
+{#        AccFileChart.Line(AccFileChartData, AccFileChartOptions);#}
+        {##}
+        {#//-------------#}
+        {#//- AREA CHART DATA_1-#}
+        {#//-------------#}
+        {#// Get context with jQuery - using jQuery's .get() method.#}
+        {#let AccHourChartCanvas = $('#AccHourChart').get(0).getContext('2d');#}
+        {#// This will get the first returned node in the jQuery collection.#}
+        {#let AccHourChart       = new Chart(AccHourChartCanvas);#}
+        {##}
+        {#let AccHourChartData = {#}
+        {#    labels  : data.accumulative.label_dates,#}
+        {#    datasets: [#}
+        {#        {#}
+        {#            label               : 'Hours',#}
+        {#            fillColor           : 'rgba(193,199,209,0.9)',#}
+        {#            strokeColor         : 'rgba(193,199,209,0.8)',#}
+        {#            pointColor          : '#c1c7d1',#}
+        {#            pointStrokeColor    : 'rgba(193,199,209,1)',#}
+        {#            pointHighlightFill  : '#c1c7d1',#}
+        {#            pointHighlightStroke: 'rgba(193,199,209,1)',#}
+        {#            data                : data.accumulative.collected_hours#}
+        {#        }#}
+        {#    ]#}
+{#        };#}
+        {##}
+        {#let AccHourChartOptions = {#}
+        {#    //Boolean - If we should show the scale at all#}
+        {#    showScale               : true,#}
+        {#    //Boolean - Whether grid lines are shown across the chart#}
+        {#    scaleShowGridLines      : false,#}
+        {#    //String - Colour of the grid lines#}
+        {#    scaleGridLineColor      : 'rgba(0,0,0,.05)',#}
+        {#    //Number - Width of the grid lines#}
+        {#    scaleGridLineWidth      : 1,#}
+        {#    //Boolean - Whether to show horizontal lines (except X axis)#}
+        {#    scaleShowHorizontalLines: true,#}
+        {#    //Boolean - Whether to show vertical lines (except Y axis)#}
+        {#    scaleShowVerticalLines  : true,#}
+        {#    //Boolean - Whether the line is curved between points#}
+        {#    bezierCurve             : true,#}
+        {#    //Number - Tension of the bezier curve between points#}
+        {#    bezierCurveTension      : 0.3,#}
+        {#    //Boolean - Whether to show a dot for each point#}
+        {#    pointDot                : false,#}
+        {#    //Number - Radius of each point dot in pixels#}
+        {#    pointDotRadius          : 4,#}
+        {#    //Number - Pixel width of point dot stroke#}
+        {#    pointDotStrokeWidth     : 1,#}
+        {#    //Number - amount extra to add to the radius to cater for hit detection outside the drawn point#}
+        {#    pointHitDetectionRadius : 1,#}
+        {#    //Boolean - Whether to show a stroke for datasets#}
+        {#    datasetStroke           : true,#}
+        {#    //Number - Pixel width of dataset stroke#}
+        {#    datasetStrokeWidth      : 2,#}
+        {#    //Boolean - Whether to fill the dataset with a color#}
+        {#    datasetFill             : true,#}
+        {#    //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container#}
+        {#    maintainAspectRatio     : true,#}
+        {#    //Boolean - whether to make the chart responsive to window resizing#}
+        {#    responsive              : true#}
+        {#};#}
+        {##}
+        {#//Create the Area chart#}
+        {#AccHourChart.Line(AccHourChartData, AccHourChartOptions);#}
+
+        //--------------
+        //- bar CHART -
+        //--------------
+
+        let StorageChartData = {
+            labels  : data.storage_usage.labels,
+            datasets: [
+                {
+                    label               : 'Total',
+                    fillColor           : 'rgba(210, 214, 222, 1)',
+                    strokeColor         : 'rgba(210, 214, 222, 1)',
+                    pointColor          : 'rgba(210, 214, 222, 1)',
+                    pointStrokeColor    : '#c1c7d1',
+                    pointHighlightFill  : '#fff',
+                    pointHighlightStroke: 'rgba(220,220,220,1)',
+                    data                : data.storage_usage.total
+                },
+                {
+                    label               : 'Available',
+                    fillColor           : '#00c0ef',
+                    strokeColor         : '#00c0ef',
+                    pointColor          : '#00c0ef',
+                    pointStrokeColor    : 'rgba(60,141,188,1)',
+                    pointHighlightFill  : '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data                : data.storage_usage.free
+                }
+            ]
+        };
+        {##}
+        {#let StorageChartCanvas               = document.getElementById('StorageChart').getContext('2d');#}
+        {#let StorageChart                     = new Chart(StorageChartCanvas);#}
+        {#let StorageChartOptions              = {#}
+        {#    //Boolean - If we should show the scale at all#}
+        {#    showScale               : true,#}
+        {#    //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value#}
+        {#    scaleBeginAtZero        : true,#}
+        {#    //Boolean - Whether grid lines are shown across the chart#}
+        {#    scaleShowGridLines      : false,#}
+        {#    //String - Colour of the grid lines#}
+        {#    scaleGridLineColor      : 'rgba(0,0,0,.05)',#}
+        {#    //Number - Width of the grid lines#}
+        {#    scaleGridLineWidth      : 1,#}
+        {#    //Boolean - Whether to show horizontal lines (except X axis)#}
+        {#    scaleShowHorizontalLines: true,#}
+        {#    //Boolean - Whether to show vertical lines (except Y axis)#}
+        {#    scaleShowVerticalLines  : true,#}
+        {#    //Boolean - If there is a stroke on each bar#}
+        {#    barShowStroke           : true,#}
+        {#    //Number - Pixel width of the bar stroke#}
+        {#    barStrokeWidth          : 2,#}
+        {#    //Number - Spacing between each of the X value sets#}
+        {#    barValueSpacing         : 5,#}
+        {#    //Number - Spacing between data sets within X values#}
+        {#    barDatasetSpacing       : 1,#}
+        {#    //Boolean - whether to make the chart responsive#}
+        {#    responsive              : true,#}
+        {#    datasetFill             : false,#}
+        {#    maintainAspectRatio     : true#}
+        {#};#}
+        {##}
+        {#StorageChart.Bar(StorageChartData, StorageChartOptions);#}
+        var cnt;
+        var patients_data = [];
+        for (cnt=0; cnt<data.patients_count.length; cnt++){
+            patients_data.push({ y: data.patients_year[cnt], a: data.patients_count[cnt]})
+        }
+
+        config2 = {
+          data: patients_data,
+          xkey: 'y',
+          ykeys: ['a'],
+          labels: ['Saved Patients'],
+          fillOpacity: 0.6,
+          hideHover: 'auto',
+          behaveLikeLine: true,
+          resize: true,
+          pointFillColors:['#ffffff'],
+          pointStrokeColors: ['black'],
+          lineColors:['gray','red'],
+          xLabelMargin:10,
+      };
+        config2.element = 'patients_bar';
+        Morris.Bar(config2);
+
+
+            var piedata = [
+          { y: 'Bx50', a: data.device.Bx50},
+          { y: 'Intellivue', a: data.device.Intellivue},
+          { y: 'Primus', a: data.device.Primus},
+          { y: 'BIS', a: data.device.BIS},
+          { y: 'EV1000', a: data.device.EV1000},
+          { y: 'Vigilance', a: data.device.Vigilance},
+          {#{ y: 'Invos', a: data.device.Invos},#}
+          { y: 'Root', a: data.device.Root},
+
+        ],
+        config = {
+          data: piedata,
+          xkey: 'y',
+          ykeys: ['a'],
+          labels: ['Saved Patients'],
+          fillOpacity: 0.6,
+          hideHover: 'auto',
+          behaveLikeLine: true,
+          resize: true,
+          pointFillColors:['#ffffff'],
+          pointStrokeColors: ['black'],
+          lineColors:['gray','red'],
+          xLabelMargin:10,
+
+      };
+        config.element = 'bar-chart';
+        Morris.Bar(config);
+
+{##}
+{#      patients graph #}
+{#            var patients_data = [#}
+{#          { y: 'Bx50', a: data.device.Bx50},#}
+{#          { y: 'Intellivue', a: data.device.Intellivue},#}
+{#          { y: 'Primus', a: data.device.Primus},#}
+{#          { y: 'BIS', a: data.device.BIS},#}
+{#          { y: 'EV1000', a: data.device.EV1000},#}
+{#          { y: 'Vigilance', a: data.device.Vigilance},#}
+          {#{ y: 'Invos', a: data.device.Invos},#}
+{#          { y: 'Root', a: data.device.Root},#}
+{##}
+{#        ],#}
+{#        config2 = {#}
+{#          data: patients_data,#}
+{#          xkey: 'y',#}
+{#          ykeys: ['a'],#}
+{#          labels: ['Saved Patients'],#}
+{#          fillOpacity: 0.6,#}
+{#          hideHover: 'auto',#}
+{#          behaveLikeLine: true,#}
+{#          resize: true,#}
+{#          pointFillColors:['#ffffff'],#}
+{#          pointStrokeColors: ['black'],#}
+{#          lineColors:['gray','red']#}
+{#      };#}
+{#        config.element = 'patients-chart';#}
+{#        Morris.Bar(config2);#}
+
+
+    Morris.Donut({
+      element: 'pie-chart',
+      data: [
+        {label: "저장용량", value: data.storage_usage.used[0]},
+        {label: "남은용량", value:data.storage_usage.free[0]},
+      ]
+    });
+    });
+
+
+</script>
+</body>
+</html>
